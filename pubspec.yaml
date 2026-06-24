@@ -1,0 +1,28 @@
+name: aplikasi_absen_wrapper
+description: A new Flutter project.
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.12.0 <3.0.0" # Diupdate sedikit agar mendukung Null Safety dasar
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.0
+  
+  # Library Versi Kompatibel untuk Akses Biometrik, GPS, Kamera, dan Webview
+  flutter_inappwebview: ^6.1.5
+  device_info_plus: ^10.1.0
+  local_auth: ^2.1.6
+  geolocator: ^9.0.2
+  permission_handler: ^10.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

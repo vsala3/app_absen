@@ -1,5 +1,7 @@
 plugins {
     id("com.android.application")
+    // Tambahkan plugin kotlin android di sini
+    id("org.jetbrains.kotlin.android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
@@ -15,11 +17,13 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.aplikasi_absen_wrapper"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        
+        // PERBAIKAN: local_auth mewajibkan minSdk minimal 21.
+        // Jika flutter.minSdkVersion bawaan Anda masih di bawah 21 (misal 19), 
+        // maka build akan gagal. Kita kunci ke 21 demi keamanan biometrik.
+        minSdk = 21
+        
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

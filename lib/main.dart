@@ -79,7 +79,6 @@ class _WebViewAbsenState extends State<WebViewAbsen> {
         authMessages: const <AuthMessages>[
           AndroidAuthMessages(
             signInTitle: 'Autentikasi Biometrik',
-            biometricHint: 'Sentuh sensor sidik jari',
             cancelButton: 'Batal',
           ),
         ],

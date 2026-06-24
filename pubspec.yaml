@@ -13,8 +13,8 @@ dependencies:
 
   cupertino_icons: ^1.0.0
   
-  # Diganti ke 6.0.5 agar lolos dari semua error versi di server GitHub
-  flutter_inappwebview: ^6.0.5
+  # Diubah ke ^6.0.0 karena versi ini resmi ada di pub.dev dan cocok untuk Dart 3.4.4
+  flutter_inappwebview: ^6.0.0
   device_info_plus: ^10.1.0
   local_auth: ^2.1.6
   geolocator: ^9.0.2

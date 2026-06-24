@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.aplikasi_absen_wrapper"
-        minSdk = 21 
+        minSdk = 21 // local_auth butuh minimal API 21
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -29,12 +29,15 @@ android {
     }
 }
 
+// Di sini tempat yang benar untuk blok kotlin versi 2.0.21+
 kotlin {
     compilerOptions {
-        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        freeCompilerArgs.add("-Xskip-metadata-version-check")
     }
 }
 
+// Di sini tempat yang benar untuk blok flutter
 flutter {
     source = "../.."
 }

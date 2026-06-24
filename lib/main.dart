@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:local_auth/local_auth.dart';
-// Import tambahan untuk konfigurasi dialog biometrik spesifik Android di versi baru
 import 'package:local_auth_android/local_auth_android.dart'; 
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -43,7 +42,6 @@ class _WebViewAbsenState extends State<WebViewAbsen> {
     _initPermissionsAndDevice();
   }
 
-  // 1. Meminta Izin Perangkat (Kamera & GPS) dan mengambil Hardware ID
   Future<void> _initPermissionsAndDevice() async {
     await [
       Permission.camera,
@@ -70,21 +68,18 @@ class _WebViewAbsenState extends State<WebViewAbsen> {
     });
   }
 
-  // 2. Fungsi memicu sensor Sidik Jari / Wajah Hardware HP (Versi Kompatibel local_auth Baru)
   Future<bool> _biometricCheck() async {
     try {
       bool canCheckBiometrics = await auth.canCheckBiometrics;
       bool isDeviceSupported = await auth.isDeviceSupported();
       if (!canCheckBiometrics && !isDeviceSupported) return false;
 
-      // PERBAIKAN TOTAL: Menggunakan parameter authMessages bawaan local_auth baru 
-      // Menggantikan parameter 'options' yang menyebabkan error kompilasi
       return await auth.authenticate(
         localizedReason: 'Tempel sidik jari Anda untuk konfirmasi absen',
         authMessages: const <AuthMessages>[
           AndroidAuthMessages(
             signInTitle: 'Autentikasi Biometrik',
-            biometricHint: 'Sentuh sensor sidik jari perangkat Anda',
+            biometricHint: 'Sentuh sensor sidik jari',
             cancelButton: 'Batal',
           ),
         ],
@@ -94,14 +89,10 @@ class _WebViewAbsenState extends State<WebViewAbsen> {
     }
   }
 
-  // 3. Fungsi mengambil Koordinat GPS HP yang Akurat
   Future<Map<String, double>> _getCurrentGPS() async {
     try {
-      // Pastikan service GPS aktif sebelum menembak koordinat
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        return {"latitude": 0.0, "longitude": 0.0};
-      }
+      if (!serviceEnabled) return {"latitude": 0.0, "longitude": 0.0};
 
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
@@ -121,41 +112,30 @@ class _WebViewAbsenState extends State<WebViewAbsen> {
       body: SafeArea(
         child: InAppWebView(
           initialUrlRequest: URLRequest(url: WebUri("https://hrmis.up.railway.app")),
-          
           initialSettings: InAppWebViewSettings(
             javaScriptEnabled: true,
             mediaPlaybackRequiresUserGesture: false,
           ),
-          
           androidOnPermissionRequest: (controller, origin, resources) async {
             return PermissionRequestResponse(
               resources: resources,
               action: PermissionRequestResponseAction.GRANT,
             );
           },
-
           onWebViewCreated: (controller) {
             webViewController = controller;
             
             controller.addJavaScriptHandler(
               handlerName: 'getHardwareId',
-              callback: (args) {
-                return deviceId;
-              },
+              callback: (args) => deviceId,
             );
-
             controller.addJavaScriptHandler(
               handlerName: 'pemicuBiometrikHP',
-              callback: (args) async {
-                return await _biometricCheck();
-              },
+              callback: (args) async => await _biometricCheck(),
             );
-
             controller.addJavaScriptHandler(
               handlerName: 'getGPSPerangkat',
-              callback: (args) async {
-                return await _getCurrentGPS();
-              },
+              callback: (args) async => await _getCurrentGPS(),
             );
           },
         ),

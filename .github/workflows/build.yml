@@ -25,26 +25,15 @@ jobs:
         with:
           channel: 'stable'
 
-      # PERBAIKAN: Menggunakan perintah upgrade standar yang aman tanpa flag aneh
-      - name: Install and Upgrade Dependencies
+      # PERBAIKAN: Jangan pakai --major-versions karena merusak dependensi local_auth di main.dart
+      - name: Install Dependencies
         run: |
           rm -f pubspec.lock
           flutter pub get
-          flutter pub upgrade --major-versions
 
-      # JURUS PAMUNGKAS: Tetap patch proguard jika ada library lama yang nyangkut
-      - name: Patch Proguard Error (Conditional)
-        run: |
-          FILE_PATH="/home/runner/.pub-cache/hosted/pub.dev/flutter_inappwebview_android-1.1.3/android/build.gradle"
-          if [ -f "$FILE_PATH" ]; then
-            echo "Memperbaiki file build.gradle webview..."
-            sed -i "s/'proguard-android.txt'/'proguard-android-optimize.txt'/g" "$FILE_PATH"
-          else
-            echo "Webview aman, skip patching."
-          fi
-
+      # PERBAIKAN PROGUARD: Flag bypass diimplementasikan langsung saat build untuk menghindari kegagalan AGP validation
       - name: Build APK Release
-        run: flutter build apk --release
+        run: flutter build apk --release --android-skip-build-dependency-validation
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4

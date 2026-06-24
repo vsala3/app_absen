@@ -30,3 +30,17 @@ subprojects {
         }
     }
 }
+
+// ... (Sisa kode atas biarkan tetap sama)
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        // Tambahan opsi untuk membabat warning metadata jika ada library bandel
+        freeCompilerArgs.add("-Xskip-metadata-version-check")
+    }
+}
+
+flutter {
+    source = "../.."
+}

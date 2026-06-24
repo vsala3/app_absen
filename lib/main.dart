@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:local_auth/local_auth.dart';
+// Import tambahan untuk konfigurasi dialog biometrik spesifik Android di versi baru
+import 'package:local_auth_android/local_auth_android.dart'; 
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -43,7 +45,7 @@ class _WebViewAbsenState extends State<WebViewAbsen> {
 
   // 1. Meminta Izin Perangkat (Kamera & GPS) dan mengambil Hardware ID
   Future<void> _initPermissionsAndDevice() async {
-    Map<Permission, PermissionStatus> statuses = await [
+    await [
       Permission.camera,
       Permission.locationWhenInUse,
     ].request();
@@ -68,19 +70,24 @@ class _WebViewAbsenState extends State<WebViewAbsen> {
     });
   }
 
-  // 2. Fungsi memicu sensor Sidik Jari / Wajah Hardware HP
+  // 2. Fungsi memicu sensor Sidik Jari / Wajah Hardware HP (Versi Kompatibel local_auth Baru)
   Future<bool> _biometricCheck() async {
     try {
       bool canCheckBiometrics = await auth.canCheckBiometrics;
-      if (!canCheckBiometrics) return false;
+      bool isDeviceSupported = await auth.isDeviceSupported();
+      if (!canCheckBiometrics && !isDeviceSupported) return false;
 
-      // PERBAIKAN: Menghapus keyword 'const' agar kompatibel dengan local_auth versi baru
+      // PERBAIKAN TOTAL: Menggunakan parameter authMessages bawaan local_auth baru 
+      // Menggantikan parameter 'options' yang menyebabkan error kompilasi
       return await auth.authenticate(
         localizedReason: 'Tempel sidik jari Anda untuk konfirmasi absen',
-        options: const AuthenticationOptions(
-          biometricOnly: true, // Wajib sidik jari/wajah hardware asli
-          stickyAuth: true,
-        ),
+        authMessages: const <AuthMessages>[
+          AndroidAuthMessages(
+            signInTitle: 'Autentikasi Biometrik',
+            biometricHint: 'Sentuh sensor sidik jari perangkat Anda',
+            cancelButton: 'Batal',
+          ),
+        ],
       );
     } catch (e) {
       return false;
@@ -90,6 +97,12 @@ class _WebViewAbsenState extends State<WebViewAbsen> {
   // 3. Fungsi mengambil Koordinat GPS HP yang Akurat
   Future<Map<String, double>> _getCurrentGPS() async {
     try {
+      // Pastikan service GPS aktif sebelum menembak koordinat
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        return {"latitude": 0.0, "longitude": 0.0};
+      }
+
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
@@ -109,11 +122,9 @@ class _WebViewAbsenState extends State<WebViewAbsen> {
         child: InAppWebView(
           initialUrlRequest: URLRequest(url: WebUri("https://hrmis.up.railway.app")),
           
-          initialOptions: InAppWebViewGroupOptions(
-            crossPlatform: InAppWebViewOptions(
-              javaScriptEnabled: true,
-              mediaPlaybackRequiresUserGesture: false, 
-            ),
+          initialSettings: InAppWebViewSettings(
+            javaScriptEnabled: true,
+            mediaPlaybackRequiresUserGesture: false,
           ),
           
           androidOnPermissionRequest: (controller, origin, resources) async {

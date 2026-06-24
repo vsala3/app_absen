@@ -5,7 +5,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.12.0 <4.0.0" # Diupdate sedikit agar mendukung Null Safety dasar
+  sdk: ">=2.12.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -13,7 +13,6 @@ dependencies:
 
   cupertino_icons: ^1.0.0
   
-  # Library Versi Kompatibel untuk Akses Biometrik, GPS, Kamera, dan Webview
   flutter_inappwebview: ^6.1.5
   device_info_plus: ^10.1.0
   local_auth: ^2.1.6
@@ -23,6 +22,9 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+dependency_overrides:
+  flutter_inappwebview_android: ^6.1.5
 
 flutter:
   uses-material-design: true

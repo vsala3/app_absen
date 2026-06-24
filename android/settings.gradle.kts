@@ -21,8 +21,7 @@ pluginManagement {
 
 plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
-    id("com.android.application") version "8.1.0" apply false
-    // Menggunakan Kotlin versi stabil yang aman untuk Gradle 8.1.0 bawaan Flutter Anda
+    id("com.android.application") version "8.2.1" apply false
     id("org.jetbrains.kotlin.android") version "1.8.22" apply false
 }
 

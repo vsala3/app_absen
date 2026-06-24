@@ -25,20 +25,22 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Install Dependencies
+      # MEMAKSA SERVER MENGGUNAKAN VERSI TERBARU YANG SESUAI DENGAN FLUTTER MODERN
+      - name: Install and Upgrade Dependencies
         run: |
           rm -f pubspec.lock
           flutter pub get
+          flutter pub upgrade --major-versions --allow-newer
 
-      # JURUS PAMUNGKAS: Memperbaiki teks proguard langsung di cache pub server GitHub
-      - name: Patch Proguard Error
+      # JURUS PAMUNGKAS: Tetap jaga-jaga patch proguard jika webview terlanjur turun versi
+      - name: Patch Proguard Error (Conditional)
         run: |
           FILE_PATH="/home/runner/.pub-cache/hosted/pub.dev/flutter_inappwebview_android-1.1.3/android/build.gradle"
           if [ -f "$FILE_PATH" ]; then
-            echo "Memperbaiki file build.gradle yang error..."
+            echo "Memperbaiki file build.gradle webview..."
             sed -i "s/'proguard-android.txt'/'proguard-android-optimize.txt'/g" "$FILE_PATH"
           else
-            echo "File tidak ditemukan atau versi berbeda, skip patching."
+            echo "Webview aman, skip patching."
           fi
 
       - name: Build APK Release

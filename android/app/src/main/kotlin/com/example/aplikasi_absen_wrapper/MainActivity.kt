@@ -1,5 +1,8 @@
 package com.example.aplikasi_absen_wrapper
 
-import io.flutter.embedding.android.FlutterActivity
+// 1. Ubah import dari FlutterActivity ke FlutterFragmentActivity
+import io.flutter.embedding.android.FlutterFragmentActivity
 
-class MainActivity : FlutterActivity()
+// 2. Ubah class agar mewarisi FlutterFragmentActivity
+class MainActivity: FlutterFragmentActivity() {
+}

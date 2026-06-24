@@ -18,26 +18,17 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '11'
+          java-version: '17' # Wajib Java 17 untuk Gradle versi tinggi
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.3'
-          channel: 'stable'
+          channel: 'stable' # Menggunakan versi stabil terbaru bawaan GitHub Actions
 
       - name: Install Dependencies
         run: |
           rm -f pubspec.lock
           flutter pub get
-
-      # TRIK AMPUH: Memperbaiki bug groovy.xml.QName dengan memaksa Gradle ke versi stabil
-      - name: Fix Flutter Gradle Bug
-        run: |
-          if [ -f android/gradle/wrapper/gradle-wrapper.properties ]; then
-            sed -i 's/gradle-.*-all.zip/gradle-7.6.3-all.zip/g' android/gradle/wrapper/gradle-wrapper.properties
-            sed -i 's/gradle-.*-bin.zip/gradle-7.6.3-bin.zip/g' android/gradle/wrapper/gradle-wrapper.properties
-          fi
 
       - name: Build APK Release
         run: flutter build apk --release

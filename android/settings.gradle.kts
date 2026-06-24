@@ -21,8 +21,10 @@ pluginManagement {
 
 plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
-    id("com.android.application") version "8.2.1" apply false
-    id("org.jetbrains.kotlin.android") version "1.8.22" apply false
+    // Diperbarui ke 8.6.0 sesuai batas minimum aman dari Flutter SDK Anda
+    id("com.android.application") version "8.6.0" apply false
+    // Diperbarui ke 1.9.24 yang sangat stabil berpasangan dengan AGP 8.6.0
+    id("org.jetbrains.kotlin.android") version "1.9.24" apply false
 }
 
 include(":app")

@@ -43,7 +43,6 @@ class _WebViewAbsenState extends State<WebViewAbsen> {
 
   // 1. Meminta Izin Perangkat (Kamera & GPS) dan mengambil Hardware ID
   Future<void> _initPermissionsAndDevice() async {
-    // Meminta izin kamera dan lokasi
     Map<Permission, PermissionStatus> statuses = await [
       Permission.camera,
       Permission.locationWhenInUse,
@@ -75,6 +74,7 @@ class _WebViewAbsenState extends State<WebViewAbsen> {
       bool canCheckBiometrics = await auth.canCheckBiometrics;
       if (!canCheckBiometrics) return false;
 
+      // PERBAIKAN: Menghapus keyword 'const' agar kompatibel dengan local_auth versi baru
       return await auth.authenticate(
         localizedReason: 'Tempel sidik jari Anda untuk konfirmasi absen',
         options: const AuthenticationOptions(
@@ -107,17 +107,15 @@ class _WebViewAbsenState extends State<WebViewAbsen> {
     return Scaffold(
       body: SafeArea(
         child: InAppWebView(
-          // !!!Alamat web !!!
           initialUrlRequest: URLRequest(url: WebUri("https://hrmis.up.railway.app")),
           
           initialOptions: InAppWebViewGroupOptions(
             crossPlatform: InAppWebViewOptions(
               javaScriptEnabled: true,
-              mediaPlaybackRequiresUserGesture: false, // Kamera web langsung aktif tanpa interaksi ekstra
+              mediaPlaybackRequiresUserGesture: false, 
             ),
           ),
           
-          // Izinkan WebView mengakses kamera HP untuk fitur Foto Wajah di web Laravel
           androidOnPermissionRequest: (controller, origin, resources) async {
             return PermissionRequestResponse(
               resources: resources,
@@ -127,7 +125,7 @@ class _WebViewAbsenState extends State<WebViewAbsen> {
 
           onWebViewCreated: (controller) {
             webViewController = controller;
-            // JEMBATAN 1: Kirim Hardware ID ke JavaScript Web Laravel
+            
             controller.addJavaScriptHandler(
               handlerName: 'getHardwareId',
               callback: (args) {
@@ -135,7 +133,6 @@ class _WebViewAbsenState extends State<WebViewAbsen> {
               },
             );
 
-            // JEMBATAN 2: Pemicu Sidik Jari dari JavaScript Web Laravel
             controller.addJavaScriptHandler(
               handlerName: 'pemicuBiometrikHP',
               callback: (args) async {
@@ -143,7 +140,6 @@ class _WebViewAbsenState extends State<WebViewAbsen> {
               },
             );
 
-            // JEMBATAN 3: Kirim Koordinat GPS HP ke JavaScript Web Laravel
             controller.addJavaScriptHandler(
               handlerName: 'getGPSPerangkat',
               callback: (args) async {

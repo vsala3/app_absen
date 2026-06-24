@@ -18,17 +18,28 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '17' # Wajib Java 17 untuk Gradle versi tinggi
+          java-version: '17'
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: 'stable' # Menggunakan versi stabil terbaru bawaan GitHub Actions
+          channel: 'stable'
 
       - name: Install Dependencies
         run: |
           rm -f pubspec.lock
           flutter pub get
+
+      # JURUS PAMUNGKAS: Memperbaiki teks proguard langsung di cache pub server GitHub
+      - name: Patch Proguard Error
+        run: |
+          FILE_PATH="/home/runner/.pub-cache/hosted/pub.dev/flutter_inappwebview_android-1.1.3/android/build.gradle"
+          if [ -f "$FILE_PATH" ]; then
+            echo "Memperbaiki file build.gradle yang error..."
+            sed -i "s/'proguard-android.txt'/'proguard-android-optimize.txt'/g" "$FILE_PATH"
+          else
+            echo "File tidak ditemukan atau versi berbeda, skip patching."
+          fi
 
       - name: Build APK Release
         run: flutter build apk --release

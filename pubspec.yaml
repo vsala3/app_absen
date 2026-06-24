@@ -13,7 +13,8 @@ dependencies:
 
   cupertino_icons: ^1.0.0
   
-  flutter_inappwebview: ^6.1.5
+  # Diganti ke 6.0.5 agar lolos dari semua error versi di server GitHub
+  flutter_inappwebview: ^6.0.5
   device_info_plus: ^10.1.0
   local_auth: ^2.1.6
   geolocator: ^9.0.2
